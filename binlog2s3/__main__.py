@@ -19,11 +19,13 @@ def main():
                             help="The file to start uploading the binlogs from")
     arg_parser.add_argument("--tempdir", required=True,
                             help="The temporary directory to store the binlogs in, needs to be empty")
+    arg_parser.add_argument("--provider", required=True,
+                            help="The cloud service to upload the binlogs to (currently supported s3 and gcs)")
     arg_parser.add_argument("--bucket_name", required=True,
-                            help="The S3 bucket name to upload the binlogs to")
+                            help="The bucket name to upload the binlogs to")
     args = arg_parser.parse_args()
     streamer = get_streamer(args.binary, args.hostname, args.port, args.username, args.password,
-                            args.start_file, args.tempdir, args.bucket_name)
+                            args.start_file, args.tempdir, args.provider, args.bucket_name)
     streamer.run()
 
 if __name__ == "__main__":

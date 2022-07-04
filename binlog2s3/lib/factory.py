@@ -8,10 +8,19 @@ def get_binlog_reader(tempdir):
     return MySQLBinlogReader(tempdir)
 
 
-def get_s3_uploader(bucket_name, filename):
-    from binlog2s3.s3.uploader import S3Uploader
-    return S3Uploader(bucket_name, filename)
+def get_uploader(provider, bucket_name, filename):
+    if provider == "s3":
+        from binlog2s3.uploader.s3.uploader import S3Uploader
+        return S3Uploader(bucket_name, filename)
 
-def get_streamer(mysqlbinlog_bin, hostname, port, username, password, start_file, tempdir, bucket_name):
+    if provider == "gcs":
+        from binlog2s3.uploader.gcs.uploader import GCSUploader
+        return GCSUploader(bucket_name, filename)
+
+def get_streamer(mysqlbinlog_bin, hostname, port, username, password, start_file, tempdir, provider, bucket_name):
     from binlog2s3.stream.stream import StreamBinlogs
-    return StreamBinlogs(mysqlbinlog_bin, hostname, port, username, password, start_file, tempdir, bucket_name)
+
+    if provider not in ['s3', 'gcs']:
+        raise AssertionError("Unsupported cloud provider: {name}, currently supported are: s3 and gcs".format(name=provider))
+
+    return StreamBinlogs(mysqlbinlog_bin, hostname, port, username, password, start_file, tempdir, provider, bucket_name)

@@ -31,6 +31,14 @@ class MySQLBinlogProcess(object):
             raise RuntimeError("A mysqlbinlog process is already running pid {pid}".format(
                 pid=self.mysqlbinlog_proc.pid
             ))
+        print(
+            "Starting mysqlbinlog process: {cmd}".format(
+                cmd=" ".join(self.mysqlbinlog_cmd)
+            )
+        )
         self.mysqlbinlog_proc = subprocess.Popen(
             self.mysqlbinlog_cmd, cwd=self.tempdir, stdout=subprocess.PIPE, stderr=subprocess.PIPE
         )
+
+        if self.mysqlbinlog_proc.poll():
+            raise AssertionError("The mysqlbinlog process is not running.")

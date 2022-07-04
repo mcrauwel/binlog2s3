@@ -5,8 +5,10 @@ import os
 
 from botocore.client import ClientError
 
+from binlog2s3.uploader.uploader import Uploader
 
-class S3Uploader(object):
+
+class S3Uploader(Uploader):
     def __init__(self, bucket_name, filename):
         self.bucket_name = bucket_name
         self.session = boto3.Session()
@@ -17,6 +19,8 @@ class S3Uploader(object):
         self.part_info = {
             'Parts': []
         }
+
+        self.test_bucket_access()
 
     def test_bucket_access(self):
         try:
